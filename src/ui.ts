@@ -1,30 +1,30 @@
-//User Interface for The Affair Manager
+//User Interface for The Gathering Manager
 //Code adapted from Joel Ross at the University of Wisconsin
 //@author James Church
 
 import readlineSync = require('readline-sync'); //for easier repeated prompts
-import {AffairManager} from './manager';
+import {GatheringManager} from './manager';
 
 /**
  * Function to run the UI
  */
 export function start() {
-  showMainMenu(new AffairManager());
+  showMainMenu(new GatheringManager());
 }
 
 /**
  * The main menu. Will show until the user exits
  */
-function showMainMenu(em:AffairManager) {
+function showMainMenu(em:GatheringManager) {
   while(true){ //run until we exit
-    console.log(`Welcome to the Affair Manager! Pick an option:
+    console.log(`Welcome to the Gathering Manager! Pick an option:
   1. Register a new member
-  2. Register a new affair
+  2. Register a new gathering
   3. Register a new organization
-  4. Add a member to an affair
-  5. Modify an affair
-  6. Add an affair to an organization
-  7. List affair members
+  4. Add a member to a gathering
+  5. Modify a gathering
+  6. Add a gathering to an organization
+  7. List gathering members
   8. Exit`);
 
     let response = readlineSync.question('> ')
@@ -34,12 +34,12 @@ function showMainMenu(em:AffairManager) {
 
     switch(response) { //handle each response
       case '1': showNewMemberMenu(em); break;
-      case '2': showNewAffairMenu(em); break;
+      case '2': showNewGatheringMenu(em); break;
       case '3': showNewOrganizationMenu(em); break;
-      case '4': showAddToAffairMenu(em); break;
-      case '5': showModifyAffairMenu(em); break;
+      case '4': showAddToGatheringMenu(em); break;
+      case '5': showModifyGatheringMenu(em); break;
       case '6': showAddToOrganizationMenu(em); break;
-      case '7': showListAffairMembersMenu(em); break;
+      case '7': showListGatheringMembersMenu(em); break;
       //case 8 handled above
       default: console.log('Invalid option!');
     }
@@ -50,7 +50,7 @@ function showMainMenu(em:AffairManager) {
 /**
  * Show menu to add a new member
  */
-function showNewMemberMenu(em:AffairManager) {
+function showNewMemberMenu(em:GatheringManager) {
   console.log('Add a new member.');
   let name:string = readlineSync.question('  Name: ');
   let email:string = readlineSync.question('  Email: ');
@@ -61,49 +61,49 @@ function showNewMemberMenu(em:AffairManager) {
 }
 
 /** 
- * Show menu to add a new affair. Will then show menu to add members to the affair
+ * Show menu to add a new gathering. Will then show menu to add members to the gathering
  */
-function showNewAffairMenu(em:AffairManager) {
-  console.log('Add a new affair.');
-  let affairName:string = readlineSync.question('  Title of affair: ');
+function showNewGatheringMenu(em:GatheringManager) {
+  console.log('Add a new gathering.');
+  let gatheringName:string = readlineSync.question('  Title of gathering: ');
   let zipcode:string = readlineSync.question('  Location (zip code): ');
   let date:string = readlineSync.question('  Date and time (ex: Jan 21 2017 13:00 PST): ');
 
-  em.addAffair(affairName, zipcode, date);
+  em.addGathering(gatheringName, zipcode, date);
 
-  showAddToAffairMenu(em, affairName); //add users to new affair
+  showAddToGatheringMenu(em, gatheringName); //add users to new gathering
 }
 
 /**
- * Show menu to add a new organization. Will then show menu to add affairs to the organization
+ * Show menu to add a new organization. Will then show menu to add gatherings to the organization
  */
-function showNewOrganizationMenu(em:AffairManager) {
+function showNewOrganizationMenu(em:GatheringManager) {
   console.log('Add a new organization.');
   let organizationName:string = readlineSync.question('  Title of organization: ');
 
   em.addOrganization(organizationName);
 
-  let adding = readlineSync.question('Add affairs to organization? (y/n): ');
+  let adding = readlineSync.question('Add gatherings to organization? (y/n): ');
   while(adding.toLowerCase().startsWith('y')){ //while adding members    
-    showAddToOrganizationMenu(em, organizationName); //add affairs to new organization
-    adding = readlineSync.question('Add another affair? (y/n): ');
+    showAddToOrganizationMenu(em, organizationName); //add gatherings to new organization
+    adding = readlineSync.question('Add another gathering? (y/n): ');
   }
 }
 
 /**
- * Show menu to add a member to an affair. Will repeat to add multiple members. Will show menu to search for an affair if none is provided.
+ * Show menu to add a member to a gathering. Will repeat to add multiple members. Will show menu to search for a gathering if none is provided.
  */
-function showAddToAffairMenu(em:AffairManager, affairName?:string) {
-  if(!affairName){
-    affairName = showSearchAffairsMenu(em);
-    if(!affairName){ return }//if didn't select an affair
+function showAddToGatheringMenu(em:GatheringManager, gatheringName?:string) {
+  if(!gatheringName){
+    gatheringName = showSearchGatheringsMenu(em);
+    if(!gatheringName){ return }//if didn't select a gathering
   }
 
-  let adding = readlineSync.question('Add a member to affair? (y/n): ');
+  let adding = readlineSync.question('Add a member to gathering? (y/n): ');
   while(adding.toLowerCase().startsWith('y')){ //while adding members    
     let memberName = showSearchMembersMenu(em); //find a member
     if(memberName){ //if selected someone
-      em.addMemberToAffair(memberName, affairName);
+      em.addMemberToGathering(memberName, gatheringName);
     } else {
       console.log('No member selected.')
     }
@@ -114,23 +114,23 @@ function showAddToAffairMenu(em:AffairManager, affairName?:string) {
 /**
  * Show menu to look up a member. Will return undefined if no member selected.
  */
-function showSearchMembersMenu(em:AffairManager) : string|undefined {
+function showSearchMembersMenu(em:GatheringManager) : string|undefined {
   let query:string = _promptForQuery('member');
   return _searchListMenu('member', em.findMemberNames(query));
 }
 
 /**
- * Show menu to look up an affair. Will return undefined if no affair selected.
+ * Show menu to look up a gathering. Will return undefined if no gathering selected.
  */
-function showSearchAffairsMenu(em:AffairManager) : string|undefined {
-  let query:string = _promptForQuery('affair');
-  return _searchListMenu('affair', em.findAffairNames(query));
+function showSearchGatheringsMenu(em:GatheringManager) : string|undefined {
+  let query:string = _promptForQuery('gathering');
+  return _searchListMenu('gathering', em.findGatheringNames(query));
 }
 
 /**
  * Show menu to look up a organization. Will return undefined if no organization selected.
  */
-function showSearchOrganizationsMenu(em:AffairManager) : string|undefined {
+function showSearchOrganizationsMenu(em:GatheringManager) : string|undefined {
   let query:string = _promptForQuery('organization');
   return _searchListMenu('organization', em.findOrganizationNames(query));
 }
@@ -163,16 +163,16 @@ function _searchListMenu(type:string, results:string[]) : string|undefined {
 }
 
 /**
- * Show menu to modify affair (title, time, or organization). Will show menu to search for an affair if none is provided.
+ * Show menu to modify gathering (title, time, or organization). Will show menu to search for a gathering if none is provided.
  */
-function showModifyAffairMenu(em:AffairManager, affairName?:string) {
-  if(!affairName){
-    affairName = showSearchAffairsMenu(em);
-    if(!affairName){ return }//if didn't select an affair
+function showModifyGatheringMenu(em:GatheringManager, gatheringName?:string) {
+  if(!gatheringName){
+    gatheringName = showSearchGatheringsMenu(em);
+    if(!gatheringName){ return }//if didn't select a gathering
   }
 
   while(true){ //run until we exit
-    console.log(`Edit affair '${affairName}'.
+    console.log(`Edit gathering '${gatheringName}'.
   1. Change title
   2. Change time
   3. Add to organization
@@ -181,14 +181,14 @@ function showModifyAffairMenu(em:AffairManager, affairName?:string) {
     let response:number = parseInt(readlineSync.question('> '));
     if(response == 1){
       let newTitle = readlineSync.question('  New title: ');
-      em.modifyAffair(affairName, newTitle);
+      em.modifyGathering(gatheringName, newTitle);
     }
     else if(response == 2){
       let newTime = readlineSync.question('  New date and time (ex: Jan 21 2017 13:00 PST): ');
-      em.modifyAffair(affairName, undefined, newTime); //no name to change
+      em.modifyGathering(gatheringName, undefined, newTime); //no name to change
     }
     else if(response == 3){
-      showAddToOrganizationMenu(em, undefined, affairName);
+      showAddToOrganizationMenu(em, undefined, gatheringName);
     }
     else if(response == 4){ break; //exit from loop to return
     } else {
@@ -198,12 +198,12 @@ function showModifyAffairMenu(em:AffairManager, affairName?:string) {
 }
 
 /**
- * Show menu to add an affair to a organization. Will show menus to search for an affair and a organization if either is not provided.
+ * Show menu to add a gathering to a organization. Will show menus to search for a gathering and a organization if either is not provided.
  */
-function showAddToOrganizationMenu(em:AffairManager, organizationName?:string, affairName?:string, ) {
-  if(!affairName){ //if affair not yet specified
-    affairName = showSearchAffairsMenu(em);
-    if(!affairName){ return }//if didn't select an affair
+function showAddToOrganizationMenu(em:GatheringManager, organizationName?:string, gatheringName?:string, ) {
+  if(!gatheringName){ //if gathering not yet specified
+    gatheringName = showSearchGatheringsMenu(em);
+    if(!gatheringName){ return }//if didn't select a gathering
   }
 
   if(!organizationName){ //if organization not yet specified
@@ -211,17 +211,17 @@ function showAddToOrganizationMenu(em:AffairManager, organizationName?:string, a
     if(!organizationName){ return }//if didn't select a organization
   }
 
-  //add the affair to the organization
-  em.addAffairToOrganization(affairName, organizationName);
+  //add the gathering to the organization
+  em.addGatheringToOrganization(gatheringName, organizationName);
 }
 
 /**
- * Show a list of members participating in an affair. Will show menu to search for an affair. Should include outputting member's email addresses.
+ * Show a list of members participating in a gathering. Will show menu to search for a gathering. Should include outputting member's email addresses.
  */
-function showListAffairMembersMenu(em:AffairManager) {
-  let affairName = showSearchAffairsMenu(em);
+function showListGatheringMembersMenu(em:GatheringManager) {
+  let gatheringName = showSearchGatheringsMenu(em);
 
-  let members = em.getMembers(affairName);
+  let members = em.getMembers(gatheringName);
 
   console.log('Members participating in this action:')
   console.log('  '+members.join('\n  ')+'\n');

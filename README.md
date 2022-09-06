@@ -1,6 +1,6 @@
-# The Affair Manager
+# The Gathering Manager
 
-This repo contains code for a command-line application to manage events (called "affairs" in the code), created as part of an assignment for CSCI 4602 at Austin Peay State University.
+This repo contains code for a command-line application to manage events (called "Gatherings" in the code), created as part of an assignment for CSCI 4602 at Austin Peay State University.
 
 The below questions should be answered _in detail_ regarding your submission!
 
